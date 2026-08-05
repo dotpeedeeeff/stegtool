@@ -11,7 +11,7 @@ typedef struct {
     DWORD DataOffset;
 } bmpHeader;
 
-typdef struct {
+typedef struct {
     DWORD Size;
     DWORD Width;
     DWORD Height;
