@@ -12,10 +12,16 @@ int parseHeader(Parser *parser, bmpHeader *header);
 int initInfoHeader(infoHeader *infoheader);
 
 
-int main(void)
+int main(int argc, char *argv[])
 {
+    if (argc != 2)
+    {
+        printf("File argument missing.\n");
+        return 1;
+    }
+
     // open image file
-    FILE *ptr = fopen("test.bmp", "rb");
+    FILE *ptr = fopen(argv[1], "rb");
     if (ptr == NULL)
     {
         printf("File not found.\n");
@@ -129,7 +135,6 @@ int parseHeader(Parser *parser, bmpHeader *header)
     }
     if (count == 4)
     {
-        printf("Header parse successful\n");
         return 1;
     }
     else
