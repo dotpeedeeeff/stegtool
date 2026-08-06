@@ -79,5 +79,24 @@ int readDWord(Parser * parser, DWORD * output)
     }
 }
 
-// int readPixel()
+int readPixel(Parser * parser, pixelData * output)
+{
+    if (parser && output)
+    {
+        if (parser-> end >= parser->current + 3)
+        {
+            memcpy(output, parser->current, sizeof(pixelData));
+            parser->current += 3;
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else
+    {
+        return 0;
+    }
+}
 

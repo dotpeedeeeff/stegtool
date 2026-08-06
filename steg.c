@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
     int headerCount = fread(headerBuffer, sizeof(BYTE), HEADERSIZE, ptr);
     if (headerCount != HEADERSIZE)
     {
-        printf("File read malfunction.\n");
+        printf("File read error\n");
         return 1;
     }
 
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     int infoHeaderCount = fread(infoheaderBuffer, sizeof(BYTE), INFOHEADERSIZE, ptr);
     if (infoHeaderCount != INFOHEADERSIZE)
     {
-        printf("File read malfunction.\n");
+        printf("File read error\n");
         return 1;
     }
 
@@ -72,12 +72,30 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    int bytesRemaining = header.FileSize - header.DataOffset;
+    int pixelCount = infoheader.Width * infoheader.Height;
+
+    pixelData *pixeldata = malloc(sizeof(BYTE) * bytesRemaining);
+    if (pixeldata == NULL)
+    {
+        printf("Allocation fail\n");
+        return 1;
+    }
+    int pixelDataCount = fread(pixeldata, sizeof(BYTE), bytesRemaining, ptr);
+    if (pixelDataCount != bytesRemaining)
+    {
+        printf("File read error\n");
+        return 1;
+    }
 
 
+    printf("Pixels: %i\n", pixelCount);
 
-
-
-
+    for (int i = 0; i < 10; i++)
+    {
+        printf("%x %x %x\n", pixeldata[i].Blue, pixeldata[i].Green, pixeldata[i].Red);
+    }
+    /*
     printf("Signature: %x\n", header.Signature);
     printf("File Size: %i\n", header.FileSize);
     printf("Reserved: %i\n", header.reserved);
@@ -85,8 +103,8 @@ int main(int argc, char *argv[])
 
     printf("Width: %i\n", infoheader.Width);
     printf("Height: %i\n", infoheader.Height);
-
-
+    */
+    free(pixeldata);
     fclose(ptr);
     return 0;
 }
