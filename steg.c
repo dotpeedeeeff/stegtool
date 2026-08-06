@@ -6,10 +6,12 @@
 #include <string.h>
 
 #define HEADERSIZE 14
+#define INFOHEADERSIZE 40
 
 int initHeader(bmpHeader *header);
-int parseHeader(Parser *parser, bmpHeader *header);
 int initInfoHeader(infoHeader *infoheader);
+int parseHeader(Parser *parser, bmpHeader *header);
+int parseInfoHeader(Parser *parser, infoHeader *infoheader);
 
 
 int main(int argc, char *argv[])
@@ -28,12 +30,10 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // read bmp header to buffer
+    // read header to buffer
     BYTE headerBuffer[HEADERSIZE];
-
     int headerCount = fread(headerBuffer, sizeof(BYTE), HEADERSIZE, ptr);
-
-    if (!(headerCount == HEADERSIZE))
+    if (headerCount != HEADERSIZE)
     {
         printf("File read malfunction.\n");
         return 1;
@@ -43,13 +43,30 @@ int main(int argc, char *argv[])
     bmpHeader header;
     infoHeader infoheader;
     Parser parser;
-    // initalise parser and bmpHeader
+    // initalise header and infoheader
     initHeader(&header);
     initInfoHeader(&infoheader);
-    initParser(headerBuffer, &parser, HEADERSIZE);
 
-    // parse bmpHeader
+    // initialise parser and parse header
+    initParser(headerBuffer, &parser, HEADERSIZE);
     if(!parseHeader(&parser, &header))
+    {
+        printf("Parsing failed\n");
+        return 1;
+    }
+
+    //read infoheader to buffer
+    BYTE infoheaderBuffer[INFOHEADERSIZE];
+    int infoHeaderCount = fread(infoheaderBuffer, sizeof(BYTE), INFOHEADERSIZE, ptr);
+    if (infoHeaderCount != INFOHEADERSIZE)
+    {
+        printf("File read malfunction.\n");
+        return 1;
+    }
+
+    //re-initialise parser and parse infoheader
+    initParser(infoheaderBuffer, &parser, INFOHEADERSIZE);
+    if(!parseInfoHeader(&parser, &infoheader))
     {
         printf("Parsing failed\n");
         return 1;
@@ -59,10 +76,15 @@ int main(int argc, char *argv[])
 
 
 
+
+
     printf("Signature: %x\n", header.Signature);
     printf("File Size: %i\n", header.FileSize);
     printf("Reserved: %i\n", header.reserved);
-    printf("Offset: %i\n", header.DataOffset);
+    printf("Offset: %i\n\n", header.DataOffset);
+
+    printf("Width: %i\n", infoheader.Width);
+    printf("Height: %i\n", infoheader.Height);
 
 
     fclose(ptr);
@@ -143,3 +165,59 @@ int parseHeader(Parser *parser, bmpHeader *header)
     }
 }
 
+int parseInfoHeader(Parser *parser, infoHeader *infoheader)
+{
+    int count = 0;
+    if (readDWord(parser, &infoheader->Size))
+    {
+        count++;
+    }
+    if (readDWord(parser, &infoheader->Width))
+    {
+        count++;
+    }
+    if (readDWord(parser, &infoheader->Height))
+    {
+        count++;
+    }
+    if (readWord(parser, &infoheader->Planes))
+    {
+        count++;
+    }
+    if (readWord(parser, &infoheader->BitsPerPixel))
+    {
+        count++;
+    }
+    if (readDWord(parser, &infoheader->Compression))
+    {
+        count++;
+    }
+    if (readDWord(parser, &infoheader->ImageSize))
+    {
+        count++;
+    }
+    if (readDWord(parser, &infoheader->XpixelsPerM))
+    {
+        count++;
+    }
+    if (readDWord(parser, &infoheader->YpixelsPerM))
+    {
+        count++;
+    }
+    if (readDWord(parser, &infoheader->ColorsUsed))
+    {
+        count++;
+    }
+    if (readDWord(parser, &infoheader->ImportantColors))
+    {
+        count++;
+    }
+    if (count == 11)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
