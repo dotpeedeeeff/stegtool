@@ -27,9 +27,15 @@ int readByte(Parser * parser, BYTE * output)
 {
     if (parser && output)
     {
-        * output = *parser->current;
-        parser->current++;
-        return 1;
+        if (parser->end >= parser-> current + 1)
+        {
+            memcpy(output, parser->current, sizeof(BYTE));
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
     }
     else
     {
