@@ -1,8 +1,9 @@
 #include "bmp.h"
 #include "parser.h"
-#include <stddef.h>
+#include <string.h>
 
-int initParser(BYTE * buffer, Parser * parser, DWORD length)
+
+int initParser(BYTE * buffer, Parser * parser, BYTE length)
 {
     // This function initalises the parser after checking for null pointers
     if (!buffer)
@@ -21,12 +22,62 @@ int initParser(BYTE * buffer, Parser * parser, DWORD length)
     return 1;
 }
 
-/*
-int readByte()
 
-int readWord()
+int readByte(Parser * parser, BYTE * output)
+{
+    if (parser && output)
+    {
+        * output = *parser->current;
+        parser->current++;
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
 
-int readDWord()
+int readWord(Parser * parser, WORD * output)
+{
+    if (parser && output)
+    {
+        if (parser->end >= parser->current + 2)
+        {
+            memcpy(output, parser->current, sizeof(WORD));
+            parser->current += 2;
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else
+    {
+        return 0;
+    }
+}
 
-int readPixel()
-*/
+int readDWord(Parser * parser, DWORD * output)
+{
+    if (parser && output)
+    {
+        if (parser->end >= parser->current + 4)
+        {
+            memcpy(output, parser->current, sizeof(DWORD));
+            parser->current += 4;
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+// int readPixel()
+
