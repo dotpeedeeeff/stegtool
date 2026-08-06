@@ -9,6 +9,7 @@
 
 int initHeader(bmpHeader *header);
 int parseHeader(Parser *parser, bmpHeader *header);
+int initInfoHeader(infoHeader *infoheader);
 
 
 int main(void)
@@ -42,7 +43,13 @@ int main(void)
     initParser(headerBuffer, &parser, HEADERSIZE);
 
     // parse bmpHeader
-    parseHeader(&parser, &header);
+    if(!parseHeader(&parser, &header))
+    {
+        printf("Parsing failed\n");
+        return 1;
+    }
+
+
 
 
 
@@ -101,6 +108,12 @@ int parseHeader(Parser *parser, bmpHeader *header)
     if (readWord(parser, &header->Signature))
     {
         count++;
+        if (header->Signature != 0x4D42)
+        {
+            printf("File format is not bmp\n");
+            return 0;
+        }
+
     }
     if (readDWord(parser, &header->FileSize))
     {
