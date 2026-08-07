@@ -1,9 +1,10 @@
 #include "bmp.h"
 #include "parser.h"
+#include <stdint.h>
 #include <string.h>
 
 
-int initParser(BYTE * buffer, Parser * parser, BYTE length)
+int initParser(uint8_t * buffer, Parser * parser, uint8_t length)
 {
     // This function initalises the parser after checking for null pointers
     if (!buffer)
@@ -23,13 +24,13 @@ int initParser(BYTE * buffer, Parser * parser, BYTE length)
 }
 
 
-int readByte(Parser * parser, BYTE * output)
+int readByte(Parser * parser, uint8_t * output)
 {
     if (parser && output)
     {
         if (parser->end >= parser-> current + 1)
         {
-            memcpy(output, parser->current, sizeof(BYTE));
+            memcpy(output, parser->current, sizeof(uint8_t));
             return 1;
         }
         else
@@ -43,13 +44,13 @@ int readByte(Parser * parser, BYTE * output)
     }
 }
 
-int readWord(Parser * parser, WORD * output)
+int readWord(Parser * parser, uint16_t * output)
 {
     if (parser && output)
     {
         if (parser->end >= parser->current + 2)
         {
-            memcpy(output, parser->current, sizeof(WORD));
+            memcpy(output, parser->current, sizeof(uint16_t));
             parser->current += 2;
             return 1;
         }
@@ -64,13 +65,13 @@ int readWord(Parser * parser, WORD * output)
     }
 }
 
-int readDWord(Parser * parser, DWORD * output)
+int readDWord(Parser * parser, uint32_t * output)
 {
     if (parser && output)
     {
         if (parser->end >= parser->current + 4)
         {
-            memcpy(output, parser->current, sizeof(DWORD));
+            memcpy(output, parser->current, sizeof(uint32_t));
             parser->current += 4;
             return 1;
         }
