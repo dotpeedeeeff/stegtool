@@ -123,11 +123,6 @@ int main(int argc, char *argv[])
         fclose(out);
     }
 
-
-
-
-
-
     free(pixeldata);
     fclose(ptr);
     return 0;
