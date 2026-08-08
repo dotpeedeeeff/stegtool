@@ -7,7 +7,7 @@ steg: steg.o parser.o
 steg.o: steg.c parser.h bmp.h
 	$(CC) $(CFLAGS) -c steg.c
 
-parser.o: parser.c parser.h bmp.h
+parser.o: parser.c parser.h
 	$(CC) $(CFLAGS) -c parser.c
 
 clean:

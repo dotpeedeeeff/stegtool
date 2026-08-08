@@ -44,8 +44,20 @@ int main(int argc, char *argv[])
     infoHeader infoheader;
     Parser parser;
     // initalise header and infoheader
+
+    //WORD *list[] = {&header.signature}
+
+    void(*headerptrs[]) = {
+        &header.Signature,
+        &header.FileSize,
+        &header.reserved,
+        &header.DataOffset
+    };
+
     initHeader(&header);
     initInfoHeader(&infoheader);
+
+    printf("Signature is: %p\n", (WORD**)headerptrs[0]);
 
     // initialise parser and parse header
     initParser(headerBuffer, &parser, HEADERSIZE);
@@ -73,7 +85,7 @@ int main(int argc, char *argv[])
     }
 
     int bytesRemaining = header.FileSize - header.DataOffset;
-    int pixelCount = infoheader.Width * infoheader.Height;
+    // int pixelCount = infoheader.Width * infoheader.Height;
 
     pixelData *pixeldata = malloc(sizeof(BYTE) * bytesRemaining);
     if (pixeldata == NULL)
@@ -89,21 +101,9 @@ int main(int argc, char *argv[])
     }
 
 
-    printf("Pixels: %i\n", pixelCount);
+    printf("Length: %i\n", pixeldata[0].Blue);
 
-    for (int i = 0; i < 10; i++)
-    {
-        printf("%x %x %x\n", pixeldata[i].Blue, pixeldata[i].Green, pixeldata[i].Red);
-    }
-    /*
-    printf("Signature: %x\n", header.Signature);
-    printf("File Size: %i\n", header.FileSize);
-    printf("Reserved: %i\n", header.reserved);
-    printf("Offset: %i\n\n", header.DataOffset);
 
-    printf("Width: %i\n", infoheader.Width);
-    printf("Height: %i\n", infoheader.Height);
-    */
     free(pixeldata);
     fclose(ptr);
     return 0;
