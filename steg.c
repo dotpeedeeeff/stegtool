@@ -1,4 +1,5 @@
 #include "bmp.h"
+#include "decode.h"
 #include "parser.h"
 #include <stdint.h>
 #include <stdio.h>
@@ -45,19 +46,8 @@ int main(int argc, char *argv[])
     Parser parser;
     // initalise header and infoheader
 
-    //WORD *list[] = {&header.signature}
-
-    void(*headerptrs[]) = {
-        &header.Signature,
-        &header.FileSize,
-        &header.reserved,
-        &header.DataOffset
-    };
-
     initHeader(&header);
     initInfoHeader(&infoheader);
-
-    printf("Signature is: %p\n", (WORD**)headerptrs[0]);
 
     // initialise parser and parse header
     initParser(headerBuffer, &parser, HEADERSIZE);
@@ -100,8 +90,14 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    decode(pixeldata);
 
-    printf("Length: %i\n", pixeldata[0].Blue);
+
+
+
+
+
+
 
 
     free(pixeldata);
