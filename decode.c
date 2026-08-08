@@ -52,11 +52,10 @@ int decode(pixelData *pixeldata)
             strncat(outputString, buffer, 1);
             continue;
         }
-        else if (shiftarray[i].Red <= 25)
+        else if (shiftarray[i].Red <= 26 && shiftarray[i].Red >= 1)
         {
             char buffer[] = {' ', '\0'};
             buffer[0] = decodeRed(shiftarray[i].Red);
-            //printf("%c", buffer[0]);
             strncat(outputString, buffer, 1);
             continue;
         }

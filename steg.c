@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     }
 
     // open image file
-    FILE *ptr = fopen(argv[2], "rb");
+    FILE *ptr = fopen(argv[1], "rb");
     if (ptr == NULL)
     {
         printf("File not found\n");
@@ -90,7 +90,9 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    if (argv[1][0] == 'd')
+    uint32_t pixels = infoheader.Width * infoheader.Height;
+
+    if (argc == 2)
     {
         if (!decode(pixeldata))
         {
@@ -98,6 +100,33 @@ int main(int argc, char *argv[])
             return 1;
         }
     }
+
+    if (argc == 3)
+    {
+        encode(pixeldata, pixels, argv[2]);
+
+        for (int i = 0; i < 20; i++)
+        {
+            printf("(%i %i %i)\n", pixeldata[i].Blue, pixeldata[i].Green, pixeldata[i].Red);
+        }
+
+        BYTE *outputbuffer = malloc(sizeof(BYTE) * header.FileSize);
+
+        memcpy(outputbuffer, headerBuffer, sizeof(BYTE) * HEADERSIZE);
+        memcpy(outputbuffer + HEADERSIZE, infoheaderBuffer, sizeof(BYTE) * INFOHEADERSIZE);
+        memcpy(outputbuffer + HEADERSIZE + INFOHEADERSIZE, pixeldata, sizeof(BYTE) * bytesRemaining);
+
+        FILE *out = fopen("output.bmp", "wb");
+
+        fwrite(outputbuffer, sizeof(BYTE), HEADERSIZE + INFOHEADERSIZE + bytesRemaining, out);
+        free(outputbuffer);
+        fclose(out);
+    }
+
+
+
+
+
 
     free(pixeldata);
     fclose(ptr);
