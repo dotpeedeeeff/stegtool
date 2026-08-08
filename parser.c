@@ -1,5 +1,5 @@
-#include "parser.h"
 #include <stdint.h>
+#include "parser.h"
 #include <string.h>
 
 
@@ -84,25 +84,3 @@ int readDWord(Parser * parser, uint32_t * output)
         return 0;
     }
 }
-
-int readPixel(Parser * parser, pixelData * output)
-{
-    if (parser && output)
-    {
-        if (parser-> end >= parser->current + 3)
-        {
-            memcpy(output, parser->current, sizeof(pixelData));
-            parser->current += 3;
-            return 1;
-        }
-        else
-        {
-            return 0;
-        }
-    }
-    else
-    {
-        return 0;
-    }
-}
-

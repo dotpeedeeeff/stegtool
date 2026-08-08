@@ -8,8 +8,8 @@ typedef struct Parser {
 } Parser;
 
 int initParser(uint8_t * buffer, Parser * parser, uint8_t length);
-int readByte(Parser * parser, BYTE * output);
-int readWord(Parser * parser, WORD * output);
-int readDWord(Parser * parser, DWORD * output);
+int readByte(Parser * parser, uint8_t * output);
+int readWord(Parser * parser, uint16_t * output);
+int readDWord(Parser * parser, uint32_t * output);
 
 #endif
