@@ -1,4 +1,5 @@
 #include "bmp.h"
+#include "encode.h"
 #include "decode.h"
 #include "parser.h"
 #include <stdint.h>
@@ -23,11 +24,14 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    test();
+
+
     // open image file
     FILE *ptr = fopen(argv[1], "rb");
     if (ptr == NULL)
     {
-        printf("File not found.\n");
+        printf("File not found\n");
         return 1;
     }
 
@@ -75,7 +79,6 @@ int main(int argc, char *argv[])
     }
 
     int bytesRemaining = header.FileSize - header.DataOffset;
-    // int pixelCount = infoheader.Width * infoheader.Height;
 
     pixelData *pixeldata = malloc(sizeof(BYTE) * bytesRemaining);
     if (pixeldata == NULL)
@@ -90,15 +93,11 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    decode(pixeldata);
-
-
-
-
-
-
-
-
+    if (!decode(pixeldata))
+    {
+        printf("Decoding error\n");
+        return 1;
+    }
 
     free(pixeldata);
     fclose(ptr);

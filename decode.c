@@ -17,7 +17,7 @@ int decode(pixelData *pixeldata)
     if (shiftarray == NULL)
     {
         printf("Memory allocation error\n");
-        return 1;
+        return 0;
     }
 
     /* For each pixel in the encoded zone, find the difference between
@@ -26,7 +26,6 @@ int decode(pixelData *pixeldata)
 
     for (int i = 5, j = 0; i < (messageLength + 4); i+=2)
     {
-
         shiftarray[j].Blue = abs(pixeldata[i - 1].Blue - pixeldata[i].Blue);
         shiftarray[j].Green = abs(pixeldata[i - 1].Green - pixeldata[i].Green);
         shiftarray[j].Red = abs(pixeldata[i - 1].Red - pixeldata[i].Red);
@@ -100,7 +99,7 @@ char decodeGreen(uint8_t input)
 
 char decodeRed(uint8_t input)
 {
-    return input + 'A';
+    return input + '@';
 }
 
 
