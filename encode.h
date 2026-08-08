@@ -2,6 +2,9 @@
 #define ENCODE_H
 
 
-void test(void);
+uint8_t encodeBlue(char input);
+uint8_t encodeGreen(char input);
+uint8_t encodeRed(char input);
+
 
 #endif
