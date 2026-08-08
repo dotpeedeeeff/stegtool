@@ -18,17 +18,14 @@ int parseInfoHeader(Parser *parser, infoHeader *infoheader);
 
 int main(int argc, char *argv[])
 {
-    if (argc != 2)
+    if (argc < 2)
     {
         printf("File argument missing.\n");
         return 1;
     }
 
-    test();
-
-
     // open image file
-    FILE *ptr = fopen(argv[1], "rb");
+    FILE *ptr = fopen(argv[2], "rb");
     if (ptr == NULL)
     {
         printf("File not found\n");
@@ -93,10 +90,13 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    if (!decode(pixeldata))
+    if (argv[1][0] == 'd')
     {
-        printf("Decoding error\n");
-        return 1;
+        if (!decode(pixeldata))
+        {
+            printf("Decoding error\n");
+            return 1;
+        }
     }
 
     free(pixeldata);
