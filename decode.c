@@ -8,7 +8,7 @@ int decode(pixelData *pixeldata)
 {
 
     /* Read the blue value of the first pixel to determine
-     message lenght*/
+     message length*/
     int messageLength = findLength(pixeldata);
     int stringLength = messageLength / 2;
 
@@ -59,17 +59,19 @@ int decode(pixelData *pixeldata)
             strncat(outputString, buffer, 1);
             continue;
         }
-        else if (shiftarray[i].Green <= 9)
+        else if (shiftarray[i].Green <= 10)
         {
             char buffer[] = {' ', '\0'};
             buffer[0] = decodeGreen(shiftarray[i].Green);
+
             strncat(outputString, buffer, 1);
             continue;
         }
         else
-            return 0;
+        {
+            continue;
+        }
     }
-
     // Print decoded text to the terminal.
     printf("Decoded text: %s\n", outputString);
 

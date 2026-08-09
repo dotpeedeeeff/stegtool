@@ -1,20 +1,12 @@
 #include "bmp.h"
 #include "encode.h"
 #include "decode.h"
+#include "helper.h"
 #include "parser.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#define HEADERSIZE 14
-#define INFOHEADERSIZE 40
-
-int initHeader(bmpHeader *header);
-int initInfoHeader(infoHeader *infoheader);
-int parseHeader(Parser *parser, bmpHeader *header);
-int parseInfoHeader(Parser *parser, infoHeader *infoheader);
-
 
 int main(int argc, char *argv[])
 {
@@ -24,237 +16,99 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // open image file
-    FILE *ptr = fopen(argv[1], "rb");
-    if (ptr == NULL)
-    {
-        printf("File not found\n");
-        return 1;
-    }
-
-    // read header to buffer
-    BYTE headerBuffer[HEADERSIZE];
-    int headerCount = fread(headerBuffer, sizeof(BYTE), HEADERSIZE, ptr);
-    if (headerCount != HEADERSIZE)
-    {
-        printf("File read error\n");
-        return 1;
-    }
-
-    // create header and parser structs
+    // create header and infoheader structs
     bmpHeader header;
     infoHeader infoheader;
-    Parser parser;
-    // initalise header and infoheader
 
-    initHeader(&header);
-    initInfoHeader(&infoheader);
+    // populate header struct
+    loadHeader(&header, argv[1]);
 
-    // initialise parser and parse header
-    initParser(headerBuffer, &parser, HEADERSIZE);
-    if(!parseHeader(&parser, &header))
+    /* Allocating memory to fit the whole file and then
+    reading in the whole image*/
+    BYTE *image = malloc(sizeof(BYTE) * header.FileSize);
+    if (image == NULL)
     {
-        printf("Parsing failed\n");
-        return 1;
+        printf("Memory allocation error\n");
+        return 0;
     }
+    loadImage(image, &header, argv[1]);
 
-    //read infoheader to buffer
-    BYTE infoheaderBuffer[INFOHEADERSIZE];
-    int infoHeaderCount = fread(infoheaderBuffer, sizeof(BYTE), INFOHEADERSIZE, ptr);
-    if (infoHeaderCount != INFOHEADERSIZE)
-    {
-        printf("File read error\n");
-        return 1;
-    }
+    /* Declaring pointers to give access to the infoheader
+     and pixel information parts of the image*/
 
-    //re-initialise parser and parse infoheader
-    initParser(infoheaderBuffer, &parser, INFOHEADERSIZE);
-    if(!parseInfoHeader(&parser, &infoheader))
-    {
-        printf("Parsing failed\n");
-        return 1;
-    }
+    BYTE *infoheaderptr = image + 14;
+    BYTE *pixelptr = image + header.DataOffset;
 
-    int bytesRemaining = header.FileSize - header.DataOffset;
+    // populate infoheader struct
 
-    pixelData *pixeldata = malloc(sizeof(BYTE) * bytesRemaining);
-    if (pixeldata == NULL)
-    {
-        printf("Allocation fail\n");
-        return 1;
-    }
-    int pixelDataCount = fread(pixeldata, sizeof(BYTE), bytesRemaining, ptr);
-    if (pixelDataCount != bytesRemaining)
-    {
-        printf("File read error\n");
-        return 1;
-    }
+    loadInfoHeader(infoheaderptr, &infoheader, (header.DataOffset - 14));
 
+    /* Creating a memory allocation to manipulate the pixel values,
+     followed by copying pixel data*/
+
+    int pixelBytes = header.FileSize - header.DataOffset;
+
+    /* Calculate image size, in order to know max message length */
     uint32_t pixels = infoheader.Width * infoheader.Height;
 
+    pixelData *pixeldata = calloc(pixels, sizeof(pixelData));
+    if (pixeldata == NULL)
+    {
+        printf("Memory allocation error\n");
+        return 1;
+    }
+    memcpy(pixeldata, pixelptr, sizeof(BYTE) * pixelBytes);
+
+    for (int i = 0; i < 10; i++)
+    {
+        //printf("(%i)(%i)(%i)\n", pixeldata[i].Blue, pixeldata[i].Green, pixeldata[i].Red);
+    }
+
+    //printf("-------------------------- %i\n", (int)sizeof(pixelData));
+
+
+
+    /* If two arguments, enter decode path*/
     if (argc == 2)
     {
         if (!decode(pixeldata))
         {
             printf("Decoding error\n");
+            free(image);
+            free(pixeldata);
             return 1;
         }
     }
-
+    /* If 3 arguments, enter encode path */
     if (argc == 3)
     {
-        encode(pixeldata, pixels, argv[2]);
-
-        for (int i = 0; i < 20; i++)
+        if(!encode(pixeldata, pixels, argv[2]))
         {
-            printf("(%i %i %i)\n", pixeldata[i].Blue, pixeldata[i].Green, pixeldata[i].Red);
+            printf("encoding error\n");
+            free(pixeldata);
+            free(image);
+            return 1;
         }
 
-        BYTE *outputbuffer = malloc(sizeof(BYTE) * header.FileSize);
+        /* for (int i = 0; i < 10; i++)
+        {
+            printf("(%i)(%i)(%i)\n", pixeldata[i].Blue, pixeldata[i].Green, pixeldata[i].Red);
+        } */
 
-        memcpy(outputbuffer, headerBuffer, sizeof(BYTE) * HEADERSIZE);
-        memcpy(outputbuffer + HEADERSIZE, infoheaderBuffer, sizeof(BYTE) * INFOHEADERSIZE);
-        memcpy(outputbuffer + HEADERSIZE + INFOHEADERSIZE, pixeldata, sizeof(BYTE) * bytesRemaining);
+        /* Copy the pixel data array back to the image byte array */
+        memcpy(pixelptr, pixeldata, sizeof(BYTE) * pixelBytes);
 
-        FILE *out = fopen("output.bmp", "wb");
-
-        fwrite(outputbuffer, sizeof(BYTE), HEADERSIZE + INFOHEADERSIZE + bytesRemaining, out);
-        free(outputbuffer);
-        fclose(out);
+        /* Write the complete image byte array to file */
+       if(!writeOutput(image, &header))
+       {
+            printf("writing error\n");
+            free(pixeldata);
+            free(image);
+            return 1;
+       }
     }
-
     free(pixeldata);
-    fclose(ptr);
+    free(image);
+
     return 0;
-}
-
-int initHeader(bmpHeader *header)
-{
-    if (header)
-    {
-        header->Signature = 0;
-        header->FileSize = 0;
-        header->reserved = 0;
-        header->DataOffset = 0;
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
-}
-
-int initInfoHeader(infoHeader *infoheader)
-{
-    if (infoheader)
-    {
-        infoheader->Size = 0;
-        infoheader->Width = 0;
-        infoheader->Height = 0;
-        infoheader->Planes = 0;
-        infoheader->BitsPerPixel = 0;
-        infoheader->Compression = 0;
-        infoheader->ImageSize = 0;
-        infoheader->XpixelsPerM = 0;
-        infoheader->YpixelsPerM = 0;
-        infoheader->ColorsUsed = 0;
-        infoheader->ImportantColors = 0;
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
-}
-
-int parseHeader(Parser *parser, bmpHeader *header)
-{
-    int count = 0;
-    if (readWord(parser, &header->Signature))
-    {
-        count++;
-        if (header->Signature != 0x4D42)
-        {
-            printf("File format is not bmp\n");
-            return 0;
-        }
-
-    }
-    if (readDWord(parser, &header->FileSize))
-    {
-        count++;
-    }
-    if (readDWord(parser, &header->reserved))
-    {
-        count++;
-    }
-    if (readDWord(parser, &header->DataOffset))
-    {
-        count++;
-    }
-    if (count == 4)
-    {
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
-}
-
-int parseInfoHeader(Parser *parser, infoHeader *infoheader)
-{
-    int count = 0;
-    if (readDWord(parser, &infoheader->Size))
-    {
-        count++;
-    }
-    if (readDWord(parser, &infoheader->Width))
-    {
-        count++;
-    }
-    if (readDWord(parser, &infoheader->Height))
-    {
-        count++;
-    }
-    if (readWord(parser, &infoheader->Planes))
-    {
-        count++;
-    }
-    if (readWord(parser, &infoheader->BitsPerPixel))
-    {
-        count++;
-    }
-    if (readDWord(parser, &infoheader->Compression))
-    {
-        count++;
-    }
-    if (readDWord(parser, &infoheader->ImageSize))
-    {
-        count++;
-    }
-    if (readDWord(parser, &infoheader->XpixelsPerM))
-    {
-        count++;
-    }
-    if (readDWord(parser, &infoheader->YpixelsPerM))
-    {
-        count++;
-    }
-    if (readDWord(parser, &infoheader->ColorsUsed))
-    {
-        count++;
-    }
-    if (readDWord(parser, &infoheader->ImportantColors))
-    {
-        count++;
-    }
-    if (count == 11)
-    {
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
 }

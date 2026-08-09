@@ -1,4 +1,3 @@
-
 #include <ctype.h>
 #include "bmp.h"
 #include "encode.h"
@@ -17,7 +16,7 @@ int encode(pixelData *pixeldata, uint32_t pixels, char *message)
     }
 
     // Allocate space for filtered string and initialise
-    char *filteredText = malloc(sizeof(char) * (strlen(message) + 1));
+    char *filteredText = calloc((strlen(message) + 1), sizeof(char));
     if (filteredText == NULL)
     {
         printf("Memory allocation failure.\n");
@@ -47,7 +46,7 @@ int encode(pixelData *pixeldata, uint32_t pixels, char *message)
             pixeldata[i].Red = pixeldata[i + 1].Red;
     }
     // allocate and initialise shift array
-    pixelData *shiftarray = malloc(sizeof(pixelData) * ((2 * messageLength) + 4));
+    pixelData *shiftarray = calloc((2 * messageLength) + 4, sizeof(pixelData));
     if (shiftarray == NULL)
     {
         printf("Memory allocation error\n");
@@ -73,9 +72,31 @@ int encode(pixelData *pixeldata, uint32_t pixels, char *message)
     // add shift array to the pixel array
     for (uint32_t i = 0; i < (messageLength + 5); i++)
     {
-        pixeldata[i].Blue += shiftarray[i].Blue;
-        pixeldata[i].Green += shiftarray[i].Green;
-        pixeldata[i].Red += shiftarray[i].Red;
+        if (pixeldata[i].Blue + shiftarray[i].Blue > 255)
+        {
+            pixeldata[i].Blue -= shiftarray[i].Blue;
+        }
+        else
+        {
+            pixeldata[i].Blue += shiftarray[i].Blue;
+        }
+        if (pixeldata[i].Green + shiftarray[i].Green > 255)
+        {
+            pixeldata[i].Green -= shiftarray[i].Green;
+        }
+        else
+        {
+            pixeldata[i].Green += shiftarray[i].Green;
+        }
+        if (pixeldata[i].Red + shiftarray[i].Red > 255)
+        {
+            pixeldata[i].Red -= shiftarray[i].Red;
+        }
+        else
+        {
+            pixeldata[i].Red += shiftarray[i].Red;
+        }
+
     }
 
     // set reference pixel

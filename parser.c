@@ -84,3 +84,5 @@ int readDWord(Parser * parser, uint32_t * output)
         return 0;
     }
 }
+
+
