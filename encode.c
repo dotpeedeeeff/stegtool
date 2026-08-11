@@ -72,37 +72,14 @@ int encode(pixelData *pixeldata, uint32_t pixels, char *message)
     // add shift array to the pixel array
     for (uint32_t i = 0; i < (messageLength + 5); i++)
     {
-        if (pixeldata[i].Blue + shiftarray[i].Blue > 255)
-        {
-            pixeldata[i].Blue -= shiftarray[i].Blue;
-        }
-        else
-        {
-            pixeldata[i].Blue += shiftarray[i].Blue;
-        }
-        if (pixeldata[i].Green + shiftarray[i].Green > 255)
-        {
-            pixeldata[i].Green -= shiftarray[i].Green;
-        }
-        else
-        {
-            pixeldata[i].Green += shiftarray[i].Green;
-        }
-        if (pixeldata[i].Red + shiftarray[i].Red > 255)
-        {
-            pixeldata[i].Red -= shiftarray[i].Red;
-        }
-        else
-        {
-            pixeldata[i].Red += shiftarray[i].Red;
-        }
+        pixeldata[i].Blue = pixelAddition(pixeldata[i].Blue, shiftarray[i].Blue);
+        pixeldata[i].Green = pixelAddition(pixeldata[i].Green, shiftarray[i].Green);
+        pixeldata[i].Red = pixelAddition(pixeldata[i].Red, shiftarray[i].Red);
 
     }
 
     // set reference pixel
-    pixeldata[0].Blue = messageLength;
-
-
+    setLength(pixeldata, messageLength);
 
     free(filteredText);
     free(shiftarray);
@@ -169,4 +146,35 @@ void characterFilter(char *input, char *output)
 uint32_t calcMaxMessage(uint32_t pixels)
 {
     return (pixels - 4) / 2;
+}
+
+int setLength(pixelData *pixeldata, uint32_t messageLength)
+{
+    if (pixeldata == NULL)
+    {
+        printf("Data read error\n");
+        return 0;
+    }
+    uint8_t valueGreen = messageLength / 255;
+    uint8_t valueBlue = messageLength % 255;
+
+    pixeldata[0].Green = valueGreen;
+    pixeldata[0].Blue = valueBlue;
+    pixeldata[0].Red = pixeldata[1].Red;
+
+    return 1;
+}
+
+uint8_t pixelAddition(uint8_t input1, uint8_t input2)
+{
+    /* This function adds two pixel values, if the total
+     will be greater than 255, the output is subtracted*/
+    if (input1 + input2 > 255)
+    {
+        return input1 -= input2;
+    }
+    else
+    {
+        return input1 += input2;
+    }
 }

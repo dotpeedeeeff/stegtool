@@ -82,7 +82,12 @@ int decode(pixelData *pixeldata)
 
 int findLength(pixelData pixeldata[])
 {
-    return pixeldata[0].Blue;
+    /* The message length is decoded from the Green
+     and Blue values of the first pixel in the bitmap*/
+    uint8_t valueGreen = pixeldata[0].Green;
+    uint8_t valueBlue = pixeldata[0].Blue;
+
+    return (valueGreen * 255) + valueBlue;
 }
 
 char decodeBlue(uint8_t input)

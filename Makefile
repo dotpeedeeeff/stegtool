@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -std=c11
+CFLAGS = -Wall -Wextra -Werror -std=c11 -g -O0
 
 steg: steg.o parser.o decode.o encode.o helper.o
 	$(CC) $(CFLAGS) -o steg steg.o parser.o decode.o encode.o helper.o
