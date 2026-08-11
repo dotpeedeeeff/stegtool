@@ -52,10 +52,30 @@ int main(int argc, char *argv[])
     loadImage(image, &header, argv[1]);
 
     /* Declaring pointers to give access to the infoheader
-     and pixel information parts of the image*/
+     and pixel information parts of the image. The two if statements
+     ensure that the internal pointers are in within range of the
+     allocated memory */
+    BYTE *infoheaderptr = NULL;
+    BYTE *pixelptr = NULL;
 
-    BYTE *infoheaderptr = image + 14;
-    BYTE *pixelptr = image + header.DataOffset;
+    if ((image + 14) < (image + header.FileSize))
+    {
+        infoheaderptr = image + 14;
+    }
+    else
+    {
+        printf("Pointer range error\n");
+        return 1;
+    }
+    if ((image + header.DataOffset) < (image + header.FileSize))
+    {
+        pixelptr = image + header.DataOffset;
+    }
+    else
+    {
+        printf("Pointer range error\n");
+        return 1;
+    }
 
     // populate infoheader struct
 
@@ -93,7 +113,7 @@ int main(int argc, char *argv[])
     {
         if(!encode(pixeldata, pixels, argv[2]))
         {
-            printf("encoding error\n");
+            printf("Encoding error\n");
             free(pixeldata);
             free(image);
             return 1;
