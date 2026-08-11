@@ -72,8 +72,20 @@ int decode(pixelData *pixeldata)
             continue;
         }
     }
-    // Print decoded text to the terminal.
-    printf("Decoded text: %s\n", outputString);
+
+    /* If string is more than 250 chars, output to file
+     rather than terminal*/
+    if (stringLength > 250)
+    {
+        writeOutputFile(stringLength, outputString);
+    }
+    else
+    {
+        printf("Decoded text: %s\n", outputString);
+    }
+
+
+
 
     free(shiftarray);
     free(outputString);
@@ -108,4 +120,16 @@ char decodeRed(uint8_t input)
     return input + '@';
 }
 
+int writeOutputFile(int stringLength, char *output)
+{
+    FILE *ptr = fopen("output.txt", "w");
+    int count = fwrite(output, sizeof(char), stringLength, ptr);
+    if (count < stringLength)
+    {
+        printf("Write error\n");
+        return 0;
+    }
+    fclose(ptr);
+    return 1;
+}
 

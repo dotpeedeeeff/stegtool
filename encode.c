@@ -145,7 +145,10 @@ void characterFilter(char *input, char *output)
 
 uint32_t calcMaxMessage(uint32_t pixels)
 {
-    return (pixels - 4) / 2;
+    uint32_t max = (pixels - 4) / 2;
+    printf("max chars for this image: %i\n", max);
+
+    return max;
 }
 
 int setLength(pixelData *pixeldata, uint32_t messageLength)
