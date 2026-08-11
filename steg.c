@@ -20,8 +20,26 @@ int main(int argc, char *argv[])
     bmpHeader header;
     infoHeader infoheader;
 
+    /* Checking the file size independently of the
+     reported file size in the bmp header */
+    long ptrFileSize = findFileSize(argv[1]);
+
+    /* Aborting if the file size is below the minimum size
+     of header + infoheader */
+    if (ptrFileSize < 0x37)
+    {
+        printf("File too small\n");
+        return 1;
+    }
+
     // populate header struct
     loadHeader(&header, argv[1]);
+
+    if (header.FileSize != ptrFileSize)
+    {
+        printf("File size mismatch\n");
+        return 1;
+    }
 
     /* Allocating memory to fit the whole file and then
     reading in the whole image*/
@@ -59,15 +77,6 @@ int main(int argc, char *argv[])
     }
     memcpy(pixeldata, pixelptr, sizeof(BYTE) * pixelBytes);
 
-    for (int i = 0; i < 10; i++)
-    {
-        //printf("(%i)(%i)(%i)\n", pixeldata[i].Blue, pixeldata[i].Green, pixeldata[i].Red);
-    }
-
-    //printf("-------------------------- %i\n", (int)sizeof(pixelData));
-
-
-
     /* If two arguments, enter decode path*/
     if (argc == 2)
     {
@@ -89,11 +98,6 @@ int main(int argc, char *argv[])
             free(image);
             return 1;
         }
-
-        /* for (int i = 0; i < 10; i++)
-        {
-            printf("(%i)(%i)(%i)\n", pixeldata[i].Blue, pixeldata[i].Green, pixeldata[i].Red);
-        } */
 
         /* Copy the pixel data array back to the image byte array */
         memcpy(pixelptr, pixeldata, sizeof(BYTE) * pixelBytes);

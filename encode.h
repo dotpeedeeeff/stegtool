@@ -10,6 +10,4 @@ uint8_t encodeGreen(char input);
 uint8_t encodeRed(char input);
 int setLength(pixelData *pixeldata, uint32_t messageLength);
 
-
-
 #endif

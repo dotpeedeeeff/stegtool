@@ -3,6 +3,7 @@
 
 #include "parser.h"
 
+long findFileSize(char *filename);
 int initHeader(bmpHeader *header);
 int initInfoHeader(infoHeader *infoheader);
 int parseHeader(Parser *parser, bmpHeader *header);

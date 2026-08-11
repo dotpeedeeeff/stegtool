@@ -146,7 +146,10 @@ int loadHeader(bmpHeader *header, char *filename)
         return 0;
     }
 
-    BYTE *buffer = malloc(sizeof(BYTE) * 14);
+    /* header size as per BMP standard */
+    int headerSize = 14;
+
+    BYTE *buffer = malloc(sizeof(BYTE) * headerSize);
     if (buffer == NULL)
     {
         printf("Memory allocation error\n");
@@ -161,8 +164,8 @@ int loadHeader(bmpHeader *header, char *filename)
         return 0;
     }
 
-    int headerCount = fread(buffer, sizeof(BYTE), 14, ptr);
-    if (headerCount != 14)
+    int headerCount = fread(buffer, sizeof(BYTE), headerSize, ptr);
+    if (headerCount != headerSize)
     {
         printf("File read error\n");
         free(buffer);
@@ -243,4 +246,34 @@ int writeOutput(BYTE *output, bmpHeader *header)
     }
     fclose(out);
     return 1;
+}
+
+long findFileSize(char *filename)
+{
+    /*This function reads the incoming file and the
+     calculates the length using file pointer operations */
+
+    if (filename == NULL)
+    {
+        printf("Inputs null\n");
+        return 0;
+    }
+
+    FILE *ptr = fopen(filename, "rb");
+    if (ptr == NULL)
+    {
+        printf("File not found\n");
+        return 0;
+    }
+
+    long start = ftell(ptr);
+
+    // move file pointer to EOF
+    fseek(ptr, 0, SEEK_END);
+
+    long end = ftell(ptr);
+
+    fclose(ptr);
+
+    return end - start;
 }
