@@ -77,7 +77,7 @@ int decode(pixelData *pixeldata)
      rather than terminal*/
     if (stringLength > 250)
     {
-        writeOutputFile(stringLength, outputString);
+        writeTextFile(stringLength, outputString);
     }
     else
     {
@@ -120,7 +120,7 @@ char decodeRed(uint8_t input)
     return input + '@';
 }
 
-int writeOutputFile(int stringLength, char *output)
+int writeTextFile(int stringLength, char *output)
 {
     FILE *ptr = fopen("output.txt", "w");
     int count = fwrite(output, sizeof(char), stringLength, ptr);
