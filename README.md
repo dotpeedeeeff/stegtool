@@ -2,7 +2,7 @@
 
 ## Encode and decode text hidden in bmp files
 
-----
+
 
 Afte having fun with the Filter problem in the CS50X I decided to make my own program to manipulate bmp image files.
 
@@ -14,6 +14,8 @@ Requires 24-bit uncompressed bmp files
 
 ---
 
+## Using the tool
+
 ### To encode:
 
 #### Arguments:
@@ -23,7 +25,7 @@ Requires 24-bit uncompressed bmp files
 
 ***e.g.*** ./steg test.bmp "test message"
 
-The program will produce output file: **output.bmp**
+The program will produce output file: **output.bmp** Note that all text is converted to upper case and only very limited punctuation is supported.
 
 ### To decode:
 
@@ -37,8 +39,17 @@ The program will decode any hidden message. If the output is less than 500 chara
 
 ---
 
-### Screenshots
+## Screenshots
 
 ![Encoded "hello world."](./images/helloworld.png)
 
 An example of "Hello World." encoded on a tiny 16 x 16 pixel image.
+
+---
+
+## To do
+
+- expanded punctuation set
+- improved argument parsing
+- selectable encoding density
+- txt file message input
