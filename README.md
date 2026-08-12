@@ -4,17 +4,28 @@
 
 
 
-Afte having fun with the Filter problem in the CS50X I decided to make my own program to manipulate bmp image files.
+After enjoying the Filter problem in the CS50X I decided to make my own program to manipulate bmp image files.
 
 :warning: **Warning:** This tool is **not** encryption, don't use for sensitive data!
 
-Writing this was good practice writing a parser and learning to read data from a file.
+This project was good practice working with pointers and learning to read data from a file.
 
 Requires 24-bit uncompressed bmp files
+
+This is a learning project and is currently under development. It is a working tool, but some bugs remain. Bug reports / Issues welcomed.
 
 ---
 
 ## Using the tool
+### To build
+
+1. Clone the repo
+1. Run 'make steg'
+
+```
+$ git clone https://github.com/dotpeedeeeff/stegtool.git
+$ make steg
+```
 
 ### To encode:
 
@@ -22,18 +33,21 @@ Requires 24-bit uncompressed bmp files
 1. Program name
 1. Input image
 1. String to encode
-
-***e.g.*** ./steg test.bmp "test message"
-
+```
+$ ./steg test.bmp "hello world"
+```
 The program will produce output file: **output.bmp** Note that all text is converted to upper case and only very limited punctuation is supported.
 
 ### To decode:
+
 
 #### Arguments:
 1. Program name
 1. Input image
 
-***e.g.*** ./steg output.bmp
+```
+$ ./steg output.bmp
+```
 
 The program will decode any hidden message. If the output is less than 500 characters, the output will be displayed in the terminal. Output larger than 500 chars will be written to output.txt.
 
@@ -53,3 +67,4 @@ An example of "Hello World." encoded on a tiny 16 x 16 pixel image.
 - improved argument parsing
 - selectable encoding density
 - txt file message input
+- support for different image types
