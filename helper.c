@@ -177,7 +177,7 @@ int loadHeader(bmpHeader *header, char *filename)
 
     // create and init parser
     Parser parser;
-    initParser(buffer, &parser, 14);
+    initParser(buffer, &parser, headerSize);
 
     // parse the header to populate it
     parseHeader(&parser, header);
