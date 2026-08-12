@@ -34,3 +34,11 @@ The program will produce output file: **output.bmp**
 ***e.g.*** ./steg output.bmp
 
 The program will decode any hidden message. If the output is less than 500 characters, the output will be displayed in the terminal. Output larger than 500 chars will be written to output.txt.
+
+---
+
+### Screenshots
+
+![Encoded "hello world."](./images/helloworld.png)
+
+An example of "Hello World." encoded on a tiny 16 x 16 pixel image.
