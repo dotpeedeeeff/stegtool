@@ -19,13 +19,15 @@ This is a learning project and is currently under development. It is a working t
 ## Using the tool
 ### To build
 
-1. Clone the repo
-1. Run 'make steg'
 
 ```
-$ git clone https://github.com/dotpeedeeeff/stegtool.git
-$ cd stegtool
-$ make steg
+git clone https://github.com/dotpeedeeeff/stegtool.git
+```
+```
+cd stegtool
+```
+```
+make steg
 ```
 
 ### To encode:
@@ -35,7 +37,7 @@ $ make steg
 1. Input image
 1. String to encode
 ```
-$ ./steg ./images/test.bmp "hello world"
+./steg ./images/test.bmp "hello world"
 ```
 The program will produce output file: **output.bmp** Note that all text is converted to upper case and only very limited punctuation is supported.
 
@@ -47,7 +49,7 @@ The program will produce output file: **output.bmp** Note that all text is conve
 1. Input image
 
 ```
-$ ./steg output.bmp
+./steg output.bmp
 ```
 
 The program will decode any hidden message. If the output is less than 500 characters, the output will be displayed in the terminal. Output larger than 500 chars will be written to output.txt.
