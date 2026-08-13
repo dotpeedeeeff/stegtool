@@ -35,7 +35,7 @@ $ make steg
 1. Input image
 1. String to encode
 ```
-$ ./steg test.bmp "hello world"
+$ ./steg ./images/test.bmp "hello world"
 ```
 The program will produce output file: **output.bmp** Note that all text is converted to upper case and only very limited punctuation is supported.
 
