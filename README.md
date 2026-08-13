@@ -24,6 +24,7 @@ This is a learning project and is currently under development. It is a working t
 
 ```
 $ git clone https://github.com/dotpeedeeeff/stegtool.git
+$ cd stegtool
 $ make steg
 ```
 
