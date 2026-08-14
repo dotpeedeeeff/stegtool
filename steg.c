@@ -49,6 +49,7 @@ int main(int argc, char *argv[])
         printf("Memory allocation error\n");
         return 0;
     }
+
     loadImage(image, &header, argv[1]);
 
     /* Declaring pointers to give access to the infoheader
@@ -87,14 +88,17 @@ int main(int argc, char *argv[])
     int pixelBytes = header.FileSize - header.DataOffset;
 
     /* Calculate image size, in order to know max message length */
-    uint32_t pixels = infoheader.Width * infoheader.Height;
 
-    pixelData *pixeldata = calloc(pixels, sizeof(pixelData));
+    int pixels = infoheader.Width * infoheader.Height;
+    pixels = abs(pixels);
+
+    pixelData *pixeldata = calloc(pixelBytes, sizeof(BYTE));
     if (pixeldata == NULL)
     {
         printf("Memory allocation error\n");
         return 1;
     }
+
     memcpy(pixeldata, pixelptr, sizeof(BYTE) * pixelBytes);
 
     /* If two arguments, enter decode path*/
